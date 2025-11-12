@@ -12,3 +12,10 @@
   for = "/:lang*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
+
+[[redirects]]
+  from = "/"
+  to = "/ru"
+  status = 301
+  force = true
+
