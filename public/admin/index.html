@@ -6,10 +6,25 @@
     <title>Admin</title>
   </head>
   <body>
-    <!-- Required container for Decap CMS UI -->
     <div id="nc-root"></div>
 
-    <!-- Load the CMS AFTER the container so it can append to it -->
+    <!-- Load Decap CMS AFTER the root -->
     <script src="https://unpkg.com/decap-cms@3.5.0/dist/decap-cms.js"></script>
+
+    <!-- Netlify Identity widget -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Optional: auto-route back to /admin after login -->
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) {
+            window.netlifyIdentity.on('login', () => {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>
