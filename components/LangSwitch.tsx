@@ -5,7 +5,7 @@ export default function LangSwitch({ lang }: { lang: 'en'|'ru'|'ukr' }) {
 const langs: Array<{ code: 'en'|'uk'|'ru'; label: string }> = [
 { code: 'en', label: 'ENG' },
 { code: 'uk', label: 'UKR' },
-{ code: 'ru', label: 'RUS' }
+{ code: 'ru', label: 'RU' }
 ]
 return ( <div className="flex items-center gap-2 text-xs font-medium">
 {langs.map(({ code, label }) => (
