@@ -2,9 +2,9 @@
 import Link from 'next/link'
 
 export default function LangSwitch({ lang }: { lang: 'en'|'ru'|'ukr' }) {
-const langs: Array<{ code: 'en'|'uk'|'ru'; label: string }> = [
+const langs: Array<{ code: 'en'|'ukr'|'ru'; label: string }> = [
 { code: 'en', label: 'ENG' },
-{ code: 'uk', label: 'UKR' },
+{ code: 'ukr', label: 'UKR' },
 { code: 'ru', label: 'RU' }
 ]
 return ( <div className="flex items-center gap-2 text-xs font-medium">
