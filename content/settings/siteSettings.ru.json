@@ -1,0 +1,19 @@
+{
+  "practiceName": "Ковалёва Ольга Викторовна",
+  "practiceTitle": "Лицензированный психотерапевт",
+  "logo": {
+    "url": "",
+    "alt": "Логотип"
+  },
+  "contact": {
+    "email": "olha.kovalova.therapist@gmail.com",
+    "phone": "+380 00 000 00 00"
+  },
+  "nav": {
+    "workWithMe": "Работа со мной",
+    "services": "Услуги",
+    "blog": "Блог",
+    "contact": "Контакт",
+    "cta": "Забронировать сейчас"
+  }
+}

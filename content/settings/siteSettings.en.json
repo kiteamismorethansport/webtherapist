@@ -1,0 +1,19 @@
+{
+  "practiceName": "Kovalova Olha Viktorovna",
+  "practiceTitle": "Licensed Therapist",
+  "logo": {
+    "url": "",
+    "alt": "Logo"
+  },
+  "contact": {
+    "email": "olha.kovalova.therapist@gmail.com",
+    "phone": "+380 00 000 00 00"
+  },
+  "nav": {
+    "workWithMe": "Work With Me",
+    "services": "Services",
+    "blog": "Blog",
+    "contact": "Contact",
+    "cta": "Book Now"
+  }
+}
