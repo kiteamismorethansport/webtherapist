@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import LangSwitch from './LangSwitch'
 
-export default function Header({ lang, settings }: { lang: 'en'|'ru'|'uk', settings: any }) {
+export default function Header({ lang, settings }: { lang: 'en'|'ru'|'ukr', settings: any }) {
   const [open, setOpen] = useState(false)
   const nav = settings.nav
 

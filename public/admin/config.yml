@@ -1,14 +1,14 @@
 backend:
   name: git-gateway
   branch: master
-  
+
 media_folder: "public/images"
 public_folder: "/images"
 local_backend: true
 
 i18n:
   structure: multiple_files
-  locales: [en, ru, uk]
+  locales: [en, ru, ukr]
   default_locale: ru
 
 collections:

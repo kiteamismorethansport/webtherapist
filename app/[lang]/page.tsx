@@ -2,7 +2,7 @@ import { loadSettings } from '@/lib/settings'
 import { loadPage } from '@/lib/pages'
 import Link from 'next/link'
 
-export default async function Home({ params }: { params: { lang: 'en'|'ru'|'uk' } }) {
+export default async function Home({ params }: { params: { lang: 'en'|'ru'|'ukr' } }) {
   const settings = await loadSettings(params.lang)
   const page = await loadPage('home', params.lang)
 
