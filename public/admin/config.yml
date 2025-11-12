@@ -12,47 +12,49 @@ i18n:
   default_locale: ru
 
 collections:
+  # ✅ Site Settings as a FOLDER collection (works with multiple_files)
   - name: settings
     label: Site Settings
     i18n: true
-    files:
-      - name: site
-        label: Settings
-        file: content/settings/siteSettings.en.json
+    folder: content/settings
+    create: false
+    extension: json
+    format: json
+    slug: siteSettings
+    fields:
+      - { label: Practice Name, name: practiceName, widget: string, i18n: true }
+      - { label: Practice Title, name: practiceTitle, widget: string, i18n: true }
+      - label: Logo
+        name: logo
+        widget: object
         i18n: true
         fields:
-          - { label: Practice Name, name: practiceName, widget: string, i18n: true }
-          - { label: Practice Title, name: practiceTitle, widget: string, i18n: true }
-          - label: Logo
-            name: logo
-            widget: object
-            i18n: true
-            fields:
-              - { label: URL, name: url, widget: image, required: false }
-              - { label: Alt, name: alt, widget: string, required: false }
-          - label: Contact
-            name: contact
-            widget: object
-            i18n: true
-            fields:
-              - { label: Email, name: email, widget: string }
-              - { label: Phone, name: phone, widget: string }
-          - label: Navigation
-            name: nav
-            widget: object
-            i18n: true
-            fields:
-              - { label: Work With Me, name: workWithMe, widget: string }
-              - { label: Services, name: services, widget: string }
-              - { label: Blog, name: blog, widget: string }
-              - { label: Contact, name: contact, widget: string }
-              - { label: CTA, name: cta, widget: string }
+          - { label: URL, name: url, widget: image, required: false }
+          - { label: Alt, name: alt, widget: string, required: false }
+      - label: Contact
+        name: contact
+        widget: object
+        i18n: true
+        fields:
+          - { label: Email, name: email, widget: string }
+          - { label: Phone, name: phone, widget: string }
+      - label: Navigation
+        name: nav
+        widget: object
+        i18n: true
+        fields:
+          - { label: Work With Me, name: workWithMe, widget: string }
+          - { label: Services, name: services, widget: string }
+          - { label: Blog, name: blog, widget: string }
+          - { label: Contact, name: contact, widget: string }
+          - { label: CTA, name: cta, widget: string }
 
+  # ✅ Pages: folder collection with i18n = multiple_files
   - name: pages
     label: Pages
+    i18n: true
     folder: content/pages
     create: true
-    i18n: true
     extension: mdx
     format: frontmatter
     fields:
@@ -75,11 +77,12 @@ collections:
           - { label: Canonical, name: canonical, widget: string, required: false }
           - { label: Noindex, name: noindex, widget: boolean, required: false }
 
+  # ✅ Blog Posts: folder collection with i18n = multiple_files
   - name: posts
     label: Blog Posts
+    i18n: true
     folder: content/posts
     create: true
-    i18n: true
     extension: mdx
     format: frontmatter
     fields:
