@@ -12,6 +12,18 @@ export type PostMeta = {
   description?: string;
 };
 
+// Helper to normalize frontmatter date to a string
+function normalizeDate(value: unknown): string | undefined {
+  if (!value) return undefined;
+  if (value instanceof Date) {
+    return value.toISOString().slice(0, 10); // e.g. "2025-01-01"
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  return undefined;
+}
+
 export async function listPosts(lang: Lang): Promise<PostMeta[]> {
   const dir = path.join(process.cwd(), 'content', 'posts');
   let files: string[] = [];
@@ -19,8 +31,8 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
   try {
     files = await fs.readdir(dir);
   } catch (err: any) {
-    // If the folder doesn't exist yet -> no posts
     if (err.code === 'ENOENT') {
+      // No posts folder yet
       return [];
     }
     throw err;
@@ -35,14 +47,17 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
       const raw = await fs.readFile(path.join(dir, file), 'utf8');
       const { data } = matter(raw);
       const slug = file.replace(langSuffix, '');
+      const rawDate = (data as any)?.date;
+      const date = normalizeDate(rawDate);
+
       posts.push({
         slug,
-        title: (data?.title as string) || slug,
-        date: (data?.date as string) || undefined,
-        description: (data?.description as string) || undefined,
+        title: ((data as any)?.title as string) || slug,
+        date,
+        description: ((data as any)?.description as string) || undefined,
       });
     } catch {
-      // Skip broken file instead of breaking build
+      // Skip broken file instead of killing the build
       continue;
     }
   }
@@ -57,14 +72,15 @@ export async function loadPost(slug: string, lang: Lang) {
   try {
     const raw = await fs.readFile(file, 'utf8');
     const { content, data } = matter(raw);
-    const title = (data?.title as string) || slug;
-    const date = (data?.date as string) || '';
-    const description = (data?.description as string) || '';
+    const rawDate = (data as any)?.date;
+    const date = normalizeDate(rawDate);
 
-    return { title, date, description, body: content };
+    const title = ((data as any)?.title as string) || slug;
+    const description = ((data as any)?.description as string) || '';
+
+    return { title, date: date || '', description, body: content };
   } catch (err: any) {
     if (err.code === 'ENOENT') {
-      // Fallback so build doesn’t crash if a post is missing
       return {
         title: 'Post not found',
         date: '',
