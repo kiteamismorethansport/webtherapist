@@ -1,6 +1,48 @@
-export async function loadPage(slug: string, lang: 'en'|'ru'|'ukr') {
+// lib/pages.ts
+import { promises as fs } from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+
+type Lang = 'en' | 'ukr' | 'ru';
+
+export type PageData = {
+  slug: string;
+  lang: Lang;
+  title: string;
+  hero: {
+    heading: string;
+    sub?: string;
+  };
+  body: string;
+  seo?: {
+    title?: string;
+    description?: string;
+    canonical?: string;
+    noindex?: boolean;
+  };
+};
+
+export async function loadPageBySlug(slug: string, lang: Lang): Promise<PageData> {
+  const file = path.join(process.cwd(), 'content', 'pages', `${slug}.${lang}.mdx`);
+
+  const raw = await fs.readFile(file, 'utf8');
+  const { data, content } = matter(raw);
+
+  const title = (data as any)?.title || slug;
+  const heroData = (data as any)?.hero || {};
+  const hero = {
+    heading: heroData.heading || title,
+    sub: heroData.sub || '',
+  };
+
+  const seo = (data as any)?.seo || {};
+
   return {
-    hero: { heading: lang==='ru' ? 'Доказательная терапия с теплом и ясностью.' : lang==='ukr' ? 'Доказова терапія з теплом і ясністю.' : 'Evidence-based therapy with warmth and clarity.' , sub: lang==='ru' ? 'Индивидуальные консультации онлайн и офлайн.' : lang==='ukr' ? 'Індивідуальні консультації онлайн та офлайн.' : 'Individual counseling online and in person.' },
-    address: lang === 'ru' ? 'Киев • Онлайн по всему миру' : lang === 'ukr' ? 'Київ • Онлайн по всьому світу' : 'Kyiv • Online Worldwide'
-  }
+    slug,
+    lang,
+    title,
+    hero,
+    body: content,
+    seo,
+  };
 }

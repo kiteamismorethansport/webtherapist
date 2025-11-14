@@ -12,15 +12,10 @@ export type PostMeta = {
   description?: string;
 };
 
-// Helper to normalize frontmatter date to a string
 function normalizeDate(value: unknown): string | undefined {
   if (!value) return undefined;
-  if (value instanceof Date) {
-    return value.toISOString().slice(0, 10); // e.g. "2025-01-01"
-  }
-  if (typeof value === 'string') {
-    return value;
-  }
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === 'string') return value;
   return undefined;
 }
 
@@ -31,10 +26,7 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
   try {
     files = await fs.readdir(dir);
   } catch (err: any) {
-    if (err.code === 'ENOENT') {
-      // No posts folder yet
-      return [];
-    }
+    if (err.code === 'ENOENT') return [];
     throw err;
   }
 
@@ -42,6 +34,7 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
   const matched = files.filter((f) => f.endsWith(langSuffix));
 
   const posts: PostMeta[] = [];
+
   for (const file of matched) {
     try {
       const raw = await fs.readFile(path.join(dir, file), 'utf8');
@@ -57,7 +50,6 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
         description: ((data as any)?.description as string) || undefined,
       });
     } catch {
-      // Skip broken file instead of killing the build
       continue;
     }
   }

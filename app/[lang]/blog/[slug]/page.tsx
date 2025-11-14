@@ -1,17 +1,26 @@
-import { loadPost } from '@/lib/posts';
+import { listPosts, loadPost } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 
-export function generateStaticParams() {
-  const langs = ['en', 'ukr', 'ru'] as const;
-  // prebuild the first post slug; others will be built on-demand or you can extend this list
-  const slugs = ['welcome'];
-  return langs.flatMap((lang) => slugs.map((slug) => ({ lang, slug })));
+type Lang = 'en' | 'ukr' | 'ru';
+
+export async function generateStaticParams() {
+  const langs: Lang[] = ['en', 'ukr', 'ru'];
+  const params: { lang: Lang; slug: string }[] = [];
+
+  for (const lang of langs) {
+    const posts = await listPosts(lang);
+    posts.forEach((p) => {
+      params.push({ lang, slug: p.slug });
+    });
+  }
+
+  return params;
 }
 
 export default async function BlogPost({
   params,
 }: {
-  params: { lang: 'en' | 'ukr' | 'ru'; slug: string };
+  params: { lang: Lang; slug: string };
 }) {
   const post = await loadPost(params.slug, params.lang);
 
@@ -19,9 +28,15 @@ export default async function BlogPost({
     <main>
       <section className="bg-gradient-to-b from-zinc-50 to-white border-b">
         <div className="mx-auto max-w-6xl px-4 py-16">
-          <h1 className="text-3xl md:text-4xl font-serif leading-tight">{post.title}</h1>
-          {post.date ? <div className="text-xs text-zinc-500 mt-2">{post.date}</div> : null}
-          {post.description ? <p className="mt-2 text-zinc-600 max-w-prose">{post.description}</p> : null}
+          <h1 className="text-3xl md:text-4xl font-serif leading-tight">
+            {post.title}
+          </h1>
+          {post.date ? (
+            <div className="text-xs text-zinc-500 mt-2">{post.date}</div>
+          ) : null}
+          {post.description ? (
+            <p className="mt-2 text-zinc-600 max-w-prose">{post.description}</p>
+          ) : null}
         </div>
       </section>
 
