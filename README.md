@@ -1,4 +1,4 @@
-# Web therapist
+# Web therapist1
 
 Stack: Next.js 14 (App Router) • Tailwind • Decap CMS • Netlify Forms • i18n (en/ru/uk)
 
