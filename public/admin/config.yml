@@ -43,11 +43,12 @@ collections:
         widget: object
         i18n: true
         fields:
-          - { label: Work With Me, name: workWithMe, widget: string }
-          - { label: Services, name: services, widget: string }
-          - { label: Blog, name: blog, widget: string }
-          - { label: Contact, name: contact, widget: string }
-          - { label: CTA, name: cta, widget: string }
+          - { label: Work With Me, name: workWithMe, widget: string, i18n: true }
+          - { label: Services, name: services, widget: string, i18n: true }
+          - { label: Blog, name: blog, widget: string, i18n: true }
+          - { label: Contact, name: contact, widget: string, i18n: true }
+          - { label: CTA, name: cta, widget: string, i18n: true }
+
 
   # ✅ Pages: folder collection with i18n = multiple_files
   - name: pages

@@ -3,9 +3,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import LangSwitch from './LangSwitch'
 
-type Lang = 'en' | 'ukr' | 'ru';
-
-type NavItem = { label: string; slug: string };
+type Lang = 'en' | 'ukr' | 'ru'
 
 export default function Header({
   lang,
@@ -14,9 +12,15 @@ export default function Header({
   lang: Lang;
   settings: any;
 }) {
-  const [open, setOpen] = useState(false);
-  const nav = settings.nav || {};
-  const items: NavItem[] = Array.isArray(nav.items) ? nav.items : [];
+  const [open, setOpen] = useState(false)
+  const nav = settings.nav || {}
+
+  const desktopLinks = [
+    { label: nav.workWithMe || 'Work With Me', href: `/${lang}/work-with-me` },
+    { label: nav.services || 'Services', href: `/${lang}/services` },
+    { label: nav.blog || 'Blog', href: `/${lang}/blog` },
+    { label: nav.contact || 'Contact', href: `/${lang}/contact` },
+  ]
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
@@ -48,9 +52,9 @@ export default function Header({
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm">
-          {items.map((it) => (
-            <Link key={it.slug} href={`/${lang}/${it.slug}`}>
-              {it.label}
+          {desktopLinks.map(link => (
+            <Link key={link.href} href={link.href}>
+              {link.label}
             </Link>
           ))}
 
@@ -70,7 +74,7 @@ export default function Header({
           className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-full border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-800"
           aria-expanded={open}
           aria-controls="mobile-menu"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen(v => !v)}
         >
           <span className="sr-only">Menu</span>
           <svg
@@ -105,13 +109,13 @@ export default function Header({
       >
         <div className="px-4 py-3 space-y-3">
           <nav className="flex flex-col gap-2 text-sm">
-            {items.map((it) => (
+            {desktopLinks.map(link => (
               <Link
-                key={it.slug}
-                href={`/${lang}/${it.slug}`}
+                key={link.href}
+                href={link.href}
                 onClick={() => setOpen(false)}
               >
-                {it.label}
+                {link.label}
               </Link>
             ))}
 
@@ -129,5 +133,5 @@ export default function Header({
         </div>
       </div>
     </header>
-  );
+  )
 }
