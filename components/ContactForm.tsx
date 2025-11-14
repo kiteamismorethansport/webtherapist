@@ -4,8 +4,57 @@ import { useState, FormEvent } from 'react';
 
 type Lang = 'en' | 'ukr' | 'ru';
 
+const TEXTS: Record<
+  Lang,
+  {
+    name: string;
+    email: string;
+    message: string;
+    send: string;
+    sending: string;
+    success: string;
+    error: string;
+    honeypot: string;
+  }
+> = {
+  en: {
+    name: 'Name',
+    email: 'Email',
+    message: 'Message',
+    send: 'Send',
+    sending: 'Sending…',
+    success: 'Thank you! Your message has been sent.',
+    error: 'Something went wrong. Please try again.',
+    honeypot: "Don’t fill this out if you're human:",
+  },
+  ru: {
+    name: 'Имя',
+    email: 'Email',
+    message: 'Сообщение',
+    send: 'Отправить',
+    sending: 'Отправка…',
+    success: 'Спасибо! Ваше сообщение отправлено.',
+    error: 'Что-то пошло не так. Попробуйте ещё раз.',
+    honeypot: 'Не заполняйте это поле, если вы человек:',
+  },
+  ukr: {
+    name: "Ім'я",
+    email: 'Email',
+    message: 'Повідомлення',
+    send: 'Надіслати',
+    sending: 'Надсилання…',
+    success: 'Дякую! Ваше повідомлення надіслано.',
+    error: 'Щось пішло не так. Спробуйте ще раз.',
+    honeypot: 'Не заповнюйте це поле, якщо ви людина:',
+  },
+};
+
 export default function ContactForm({ lang }: { lang: Lang }) {
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<
+    'idle' | 'submitting' | 'success' | 'error'
+  >('idle');
+
+  const t = TEXTS[lang];
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -14,7 +63,6 @@ export default function ContactForm({ lang }: { lang: Lang }) {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Netlify looks at form-name for routing
     if (!formData.has('form-name')) {
       formData.append('form-name', 'contact');
     }
@@ -40,28 +88,31 @@ export default function ContactForm({ lang }: { lang: Lang }) {
     <div>
       {status === 'success' && (
         <div className="mb-4 rounded-xl border bg-green-50 text-green-800 p-3 text-sm">
-          Thank you! Your message has been sent.
+          {t.success}
         </div>
       )}
       {status === 'error' && (
         <div className="mb-4 rounded-xl border bg-red-50 text-red-800 p-3 text-sm">
-          Something went wrong. Please try again.
+          {t.error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* hidden form name so Netlify knows which form */}
+        {/* Netlify form-name */}
         <input type="hidden" name="form-name" value="contact" />
 
-        {/* simple honeypot field */}
+        {/* Honeypot */}
         <p className="hidden">
           <label>
-            Don’t fill this out if you're human: <input name="bot-field" />
+            {t.honeypot}{' '}
+            <input name="bot-field" />
           </label>
         </p>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Name</label>
+          <label className="block text-sm font-medium mb-1">
+            {t.name}
+          </label>
           <input
             name="name"
             required
@@ -70,7 +121,9 @@ export default function ContactForm({ lang }: { lang: Lang }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label className="block text-sm font-medium mb-1">
+            {t.email}
+          </label>
           <input
             type="email"
             name="email"
@@ -80,7 +133,9 @@ export default function ContactForm({ lang }: { lang: Lang }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Message</label>
+          <label className="block text-sm font-medium mb-1">
+            {t.message}
+          </label>
           <textarea
             name="message"
             required
@@ -94,7 +149,7 @@ export default function ContactForm({ lang }: { lang: Lang }) {
           disabled={status === 'submitting'}
           className="rounded-full px-5 py-3 border border-zinc-900 hover:bg-zinc-900 hover:text-white disabled:opacity-60"
         >
-          {status === 'submitting' ? 'Sending…' : 'Send'}
+          {status === 'submitting' ? t.sending : t.send}
         </button>
       </form>
     </div>
