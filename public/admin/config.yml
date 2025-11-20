@@ -58,6 +58,8 @@ collections:
     create: true
     extension: mdx
     format: frontmatter
+    slug: "{{slug}}"
+    path: "{{slug}}.{{locale}}"
     fields:
       - { label: Title, name: title, widget: string }
       - label: Hero
@@ -67,16 +69,16 @@ collections:
           - { label: Heading, name: heading, widget: string }
           - { label: Sub, name: sub, widget: text, required: false }
           - { label: Hero Image, name: image, widget: image, required: false }
-      - { label: Body, name: body, widget: markdown }
-      - label: SEO
-        name: seo
-        widget: object
-        collapsed: true
-        fields:
-          - { label: Title, name: title, widget: string, required: false }
-          - { label: Description, name: description, widget: text, required: false }
-          - { label: Canonical, name: canonical, widget: string, required: false }
-          - { label: Noindex, name: noindex, widget: boolean, required: false }
+          - { label: Body, name: body, widget: markdown }
+          - label: SEO
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Title, name: title, widget: string, required: false }
+              - { label: Description, name: description, widget: text, required: false }
+              - { label: Canonical, name: canonical, widget: string, required: false }
+              - { label: Noindex, name: noindex, widget: boolean, required: false }
 
   # ✅ Blog Posts: folder collection with i18n = multiple_files
   - name: posts
@@ -86,6 +88,8 @@ collections:
     create: true
     extension: mdx
     format: frontmatter
+    slug: "{{slug}}"
+    path: "{{slug}}.{{locale}}"
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime }
@@ -98,3 +102,4 @@ collections:
         fields:
           - { label: Title, name: title, widget: string, required: false }
           - { label: Description, name: description, widget: text, required: false }
+
