@@ -88,24 +88,51 @@ collections:
     create: true
     extension: mdx
     format: frontmatter
-    slug: "{{slug}}"              # use our own slug field
+    slug: "{{slug}}"              # use the slug field
     path: "{{slug}}.{{locale}}"   # filename = slug.locale.mdx
     fields:
       - label: Slug
         name: slug
         widget: string
-        i18n: duplicate
+        i18n: duplicate          # same slug in all languages
         hint: "Latin-only slug, e.g. new-post"
-      - { label: Title, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime }
-      - { label: Hero Image, name: image, widget: image, required: false }
-      - { label: Body, name: body, widget: markdown }
+
+      - label: Title
+        name: title
+        widget: string
+        i18n: translate          # different title per language
+
+      - label: Date
+        name: date
+        widget: datetime
+        i18n: duplicate          # same date in all languages
+
+      - label: Hero Image
+        name: image
+        widget: image
+        required: false
+        i18n: duplicate          # same image in all languages
+
+      - label: Body
+        name: body
+        widget: markdown
+        i18n: translate          # translated content
+
       - label: SEO
         name: seo
         widget: object
+        i18n: translate
         collapsed: true
         fields:
-          - { label: Title, name: title, widget: string, required: false }
-          - { label: Description, name: description, widget: text, required: false }
+          - label: Title
+            name: title
+            widget: string
+            required: false
+            i18n: translate
+          - label: Description
+            name: description
+            widget: text
+            required: false
+            i18n: translate
 
 
