@@ -88,9 +88,14 @@ collections:
     create: true
     extension: mdx
     format: frontmatter
-    slug: "{{slug}}"
-    path: "{{slug}}.{{locale}}"
+    slug: "{{slug}}"              # use our own slug field
+    path: "{{slug}}.{{locale}}"   # filename = slug.locale.mdx
     fields:
+      - label: Slug
+        name: slug
+        widget: string
+        i18n: duplicate
+        hint: "Latin-only slug, e.g. new-post"
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime }
       - { label: Hero Image, name: image, widget: image, required: false }
@@ -102,4 +107,5 @@ collections:
         fields:
           - { label: Title, name: title, widget: string, required: false }
           - { label: Description, name: description, widget: text, required: false }
+
 
