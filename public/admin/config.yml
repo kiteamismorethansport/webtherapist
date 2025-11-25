@@ -1,98 +1,3 @@
-backend:
-  name: git-gateway
-  branch: master
-
-media_folder: "public/images"
-public_folder: "/images"
-local_backend: true
-
-i18n:
-  structure: multiple_files
-  locales: [en, ru, ukr]
-  default_locale: ru
-
-collections:
-  # ✅ Site Settings as a FOLDER collection (works with multiple_files)
-  - name: settings
-    label: Site Settings
-    i18n: true
-    folder: content/settings
-    create: false
-    extension: json
-    format: json
-    slug: siteSettings
-    fields:
-      - { label: Practice Name, name: practiceName, widget: string, i18n: true }
-      - { label: Practice Title, name: practiceTitle, widget: string, i18n: true }
-      - label: Logo
-        name: logo
-        widget: object
-        i18n: true
-        fields:
-          - { label: URL, name: url, widget: image, required: false }
-          - { label: Alt, name: alt, widget: string, required: false }
-      - label: Contact
-        name: contact
-        widget: object
-        i18n: true
-        fields:
-          - { label: Email, name: email, widget: string }
-          - { label: Phone, name: phone, widget: string }
-      - label: Navigation
-        name: nav
-        widget: object
-        i18n: true
-        fields:
-          - { label: Work With Me, name: workWithMe, widget: string, i18n: true }
-          - { label: Services, name: services, widget: string, i18n: true }
-          - { label: Blog, name: blog, widget: string, i18n: true }
-          - { label: Contact, name: contact, widget: string, i18n: true }
-          - { label: CTA, name: cta, widget: string, i18n: true }
-
-  # ✅ Pages: folder collection with explicit slug field
-  - name: pages
-    label: Pages
-    i18n: true
-    folder: content/pages
-    create: true
-    extension: mdx
-    format: frontmatter
-    slug: "{{slug}}"
-    path: "{{slug}}.{{locale}}"    # filename = slug.locale.mdx
-    fields:
-      - label: Slug
-        name: slug
-        widget: string
-        i18n: duplicate            # same slug for all locales
-        hint: "Latin-only slug, e.g. work-with-me"
-      - label: Title
-        name: title
-        widget: string
-        i18n: true
-      - label: Hero
-        name: hero
-        widget: object
-        i18n: true
-        fields:
-          - { label: Heading, name: heading, widget: string, i18n: true }
-          - { label: Subheading, name: sub, widget: text, required: false, i18n: true }
-          - { label: Hero Image, name: image, widget: image, required: false, i18n: duplicate }
-      - label: Body
-        name: body
-        widget: markdown
-        i18n: true
-      - label: SEO
-        name: seo
-        widget: object
-        collapsed: true
-        i18n: true
-        fields:
-          - { label: Title, name: title, widget: string, required: false, i18n: true }
-          - { label: Description, name: description, widget: text, required: false, i18n: true }
-          - { label: Canonical, name: canonical, widget: string, required: false, i18n: duplicate }
-          - { label: Noindex, name: noindex, widget: boolean, required: false, i18n: duplicate }
-
-  # ✅ Blog Posts: folder collection with explicit slug field
   - name: posts
     label: Blog Posts
     i18n: true
@@ -100,8 +5,12 @@ collections:
     create: true
     extension: mdx
     format: frontmatter
-    slug: "{{slug}}"               # use the slug field
-    path: "{{slug}}.{{locale}}"    # filename = slug.locale.mdx
+
+    # 🔥 IMPORTANT: use the slug field, not the built-in {{slug}} from title
+    slug: "{{fields.slug}}"
+    # filenames like: my-post.ru.mdx, my-post.en.mdx, etc.
+    path: "{{fields.slug}}.{{locale}}"
+
     fields:
       - label: Slug
         name: slug
