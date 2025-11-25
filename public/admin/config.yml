@@ -12,7 +12,9 @@ i18n:
   default_locale: ru
 
 collections:
-  # ✅ Site Settings as a FOLDER collection (works with multiple_files)
+  # =========================
+  #  Site Settings (per locale)
+  # =========================
   - name: settings
     label: Site Settings
     i18n: true
@@ -24,6 +26,7 @@ collections:
     fields:
       - { label: Practice Name, name: practiceName, widget: string, i18n: true }
       - { label: Practice Title, name: practiceTitle, widget: string, i18n: true }
+
       - label: Logo
         name: logo
         widget: object
@@ -31,6 +34,7 @@ collections:
         fields:
           - { label: URL, name: url, widget: image, required: false }
           - { label: Alt, name: alt, widget: string, required: false }
+
       - label: Contact
         name: contact
         widget: object
@@ -38,6 +42,7 @@ collections:
         fields:
           - { label: Email, name: email, widget: string }
           - { label: Phone, name: phone, widget: string }
+
       - label: Navigation
         name: nav
         widget: object
@@ -49,7 +54,9 @@ collections:
           - { label: Contact, name: contact, widget: string, i18n: true }
           - { label: CTA, name: cta, widget: string, i18n: true }
 
-  # ✅ Pages: folder collection with explicit slug field
+  # =========================
+  #  Pages (work-with-me, services, blog, contact...)
+  # =========================
   - name: pages
     label: Pages
     i18n: true
@@ -58,15 +65,16 @@ collections:
     extension: mdx
     format: frontmatter
 
+    # Use the frontmatter slug field for filenames
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
 
     fields:
-      - label: Slug
+      - label: Slug (Latin-only)
         name: slug
         widget: string
-        i18n: duplicate           # same slug for all locales
-        hint: "Latin-only slug, e.g. work-with-me"
+        i18n: duplicate
+        hint: "Used in URL, e.g. work-with-me"
 
       - label: Title
         name: title
@@ -98,7 +106,9 @@ collections:
           - { label: Canonical, name: canonical, widget: string, required: false, i18n: duplicate }
           - { label: Noindex, name: noindex, widget: boolean, required: false, i18n: duplicate }
 
-  # ✅ Blog Posts: folder collection with explicit slug field
+  # =========================
+  #  Blog Posts (with custom slug field)
+  # =========================
   - name: posts
     label: Blog Posts
     i18n: true
@@ -107,7 +117,7 @@ collections:
     extension: mdx
     format: frontmatter
 
-    # Use the *frontmatter slug field* as the real slug
+    # File name base = frontmatter slug
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
 
@@ -116,7 +126,7 @@ collections:
         name: slug
         widget: string
         i18n: duplicate
-        hint: "Used in URL. Example: hopeitsgood"
+        hint: "Used in URL, e.g. hopeitsgood"
 
       - label: Title
         name: title

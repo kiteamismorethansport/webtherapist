@@ -27,8 +27,13 @@ function normalizeDate(value: unknown): string | undefined {
   return undefined;
 }
 
+function postsDir() {
+  return path.join(process.cwd(), 'content', 'posts');
+}
+
+// List posts for a given language, using frontmatter `slug` as canonical
 export async function listPosts(lang: Lang): Promise<PostMeta[]> {
-  const dir = path.join(process.cwd(), 'content', 'posts');
+  const dir = postsDir();
   let files: string[] = [];
 
   try {
@@ -48,7 +53,6 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
       const raw = await fs.readFile(path.join(dir, file), 'utf8');
       const { data } = matter(raw);
 
-      // Prefer slug from frontmatter; fall back to filename
       const fileSlug = file.replace(langSuffix, '');
       const frontmatterSlug = (data as any)?.slug as string | undefined;
       const slug =
@@ -66,43 +70,26 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
         description: ((data as any)?.description as string) || undefined,
       });
     } catch {
-      // Skip any bad files instead of crashing
+      // skip bad file
       continue;
     }
   }
 
-  // Newest first
+  // newest first
   posts.sort((a, b) => ((a.date || '') < (b.date || '') ? 1 : -1));
   return posts;
 }
 
-export async function loadPost(slug: string, lang: Lang): Promise<LoadedPost> {
-  const file = path.join(
-    process.cwd(),
-    'content',
-    'posts',
-    `${slug}.${lang}.mdx`,
-  );
+// Load a post by the slug in the URL, matching against frontmatter `slug`
+export async function loadPost(
+  slug: string,
+  lang: Lang,
+): Promise<LoadedPost> {
+  const dir = postsDir();
+  let files: string[] = [];
 
   try {
-    const raw = await fs.readFile(file, 'utf8');
-    const { content, data } = matter(raw);
-
-    const rawDate = (data as any)?.date;
-    const date = normalizeDate(rawDate);
-
-    const fmSlug =
-      ((data as any)?.slug as string | undefined)?.trim() || slug;
-    const title = ((data as any)?.title as string) || fmSlug;
-    const description = ((data as any)?.description as string) || '';
-
-    return {
-      slug: fmSlug,
-      title,
-      date: date || '',
-      description,
-      body: content,
-    };
+    files = await fs.readdir(dir);
   } catch (err: any) {
     if (err.code === 'ENOENT') {
       return {
@@ -115,4 +102,56 @@ export async function loadPost(slug: string, lang: Lang): Promise<LoadedPost> {
     }
     throw err;
   }
+
+  const langSuffix = `.${lang}.mdx`;
+
+  // be tolerant to accidental "-" issues
+  const candidates = Array.from(
+    new Set([
+      slug,
+      slug.endsWith('-') ? slug.replace(/-+$/, '') : `${slug}-`,
+    ]),
+  );
+
+  for (const file of files) {
+    if (!file.endsWith(langSuffix)) continue;
+
+    try {
+      const fullPath = path.join(dir, file);
+      const raw = await fs.readFile(fullPath, 'utf8');
+      const { data, content } = matter(raw);
+
+      const fileSlug = file.replace(langSuffix, '');
+      const frontmatterSlug = (data as any)?.slug as string | undefined;
+      const fmSlug =
+        frontmatterSlug && frontmatterSlug.trim().length > 0
+          ? frontmatterSlug.trim()
+          : fileSlug;
+
+      if (!candidates.includes(fmSlug)) continue;
+
+      const rawDate = (data as any)?.date;
+      const date = normalizeDate(rawDate);
+      const title = ((data as any)?.title as string) || fmSlug;
+      const description = ((data as any)?.description as string) || '';
+
+      return {
+        slug: fmSlug,
+        title,
+        date: date || '',
+        description,
+        body: content,
+      };
+    } catch {
+      continue;
+    }
+  }
+
+  return {
+    slug,
+    title: 'Post not found',
+    date: '',
+    description: '',
+    body: 'This post could not be found.',
+  };
 }
