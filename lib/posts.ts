@@ -76,8 +76,24 @@ export async function listPosts(lang: Lang): Promise<PostMeta[]> {
   }
 
   // newest first
-  posts.sort((a, b) => ((a.date || '') < (b.date || '') ? 1 : -1));
-  return posts;
+  // newest first by date; undated posts go last
+posts.sort((a, b) => {
+  const ad = a.date || '';
+  const bd = b.date || '';
+
+  // both missing dates
+  if (!ad && !bd) return 0;
+  // a has no date -> goes after b
+  if (!ad) return 1;
+  // b has no date -> goes after a
+  if (!bd) return -1;
+
+  // both have dates, compare as ISO strings (newest first)
+  return ad < bd ? 1 : -1;
+});
+
+return posts;
+
 }
 
 // Load a post by the slug in the URL, matching against frontmatter `slug`
