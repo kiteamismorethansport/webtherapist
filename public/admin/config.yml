@@ -107,12 +107,17 @@ collections:
     extension: mdx
     format: frontmatter
 
-    # Use Decap's internal slug (based on title / slug control)
-    identifier_field: title
-    slug: "{{slug}}"
-    path: "{{slug}}.{{locale}}"
+    # Use the *frontmatter slug field* as the real slug
+    slug: "{{fields.slug}}"
+    path: "{{fields.slug}}.{{locale}}"
 
     fields:
+      - label: Slug (Latin-only)
+        name: slug
+        widget: string
+        i18n: duplicate
+        hint: "Used in URL. Example: hopeitsgood"
+
       - label: Title
         name: title
         widget: string
