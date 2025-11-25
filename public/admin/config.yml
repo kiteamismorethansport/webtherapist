@@ -109,7 +109,7 @@ collections:
   # =========================
   #  Blog Posts (with custom slug field)
   # =========================
-  - name: posts
+    - name: posts
     label: Blog Posts
     i18n: true
     folder: content/posts
@@ -117,26 +117,33 @@ collections:
     extension: mdx
     format: frontmatter
 
-    # File name base = frontmatter slug
+    # Use frontmatter slug for file naming
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
 
     fields:
-      - label: Slug (Latin-only)
+      - label: Slug (Latin-only, required)
         name: slug
         widget: string
         i18n: duplicate
-        hint: "Used in URL, e.g. hopeitsgood"
+        required: true
+        pattern:
+          - "^[a-z0-9-]+$"
+          - "Only lowercase Latin letters, numbers, hyphens allowed."
+        hint: "Used in URL, e.g. my-new-post"
 
       - label: Title
         name: title
         widget: string
         i18n: true
+        required: false
+        hint: "You may write title in any language."
 
       - label: Date
         name: date
         widget: datetime
         i18n: duplicate
+        required: false
 
       - label: Hero Image
         name: image
