@@ -107,36 +107,32 @@ collections:
     extension: mdx
     format: frontmatter
 
-    slug: "{{fields.slug}}"
-    path: "{{fields.slug}}.{{locale}}"
+    # Use Decap's internal slug (based on title / slug control)
+    identifier_field: title
+    slug: "{{slug}}"
+    path: "{{slug}}.{{locale}}"
 
     fields:
-      - label: Slug
-        name: slug
-        widget: string
-        i18n: duplicate           # same slug in all languages
-        hint: "Latin-only slug, e.g. new-post"
-
       - label: Title
         name: title
         widget: string
-        i18n: true                # translated per language
+        i18n: true
 
       - label: Date
         name: date
         widget: datetime
-        i18n: duplicate           # same date in all languages
+        i18n: duplicate
 
       - label: Hero Image
         name: image
         widget: image
         required: false
-        i18n: duplicate           # same image in all languages
+        i18n: duplicate
 
       - label: Body
         name: body
         widget: markdown
-        i18n: true                # translated per language
+        i18n: true
 
       - label: SEO
         name: seo
