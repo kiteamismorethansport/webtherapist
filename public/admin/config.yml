@@ -109,7 +109,7 @@ collections:
   # =========================
   #  Blog Posts (with custom slug field)
   # =========================
-    - name: posts
+  - name: posts
     label: Blog Posts
     i18n: true
     folder: content/posts
@@ -172,3 +172,4 @@ collections:
             widget: text
             required: false
             i18n: true
+
