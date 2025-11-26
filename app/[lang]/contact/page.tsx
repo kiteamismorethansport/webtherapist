@@ -1,11 +1,5 @@
-import { loadPageBySlug, type Lang } from '@/lib/pages';
-import ContactForm from '@/components/ContactForm';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-
-export function generateStaticParams() {
-  const langs: Lang[] = ['en', 'ukr', 'ru'];
-  return langs.map((lang) => ({ lang }));
-}
+import { loadPageBySlug } from '@/lib/pages';
+import type { Lang } from '@/lib/posts';
 
 export const dynamic = 'force-static';
 
@@ -16,46 +10,81 @@ export default async function ContactPage({
 }) {
   const { lang } = params;
 
-  const page = await loadPageBySlug('contact', lang).catch(() => null);
-
-  const fallbackHeading =
-    lang === 'ru'
-      ? 'Контакт'
-      : lang === 'ukr'
-      ? 'Контакт'
-      : 'Contact';
-
-  const fallbackSub =
-    lang === 'ru'
-      ? 'Напишите, и я свяжусь с вами.'
-      : lang === 'ukr'
-      ? 'Напишіть, і я з вами зв’яжуся.'
-      : 'Send a message and I’ll get back to you.';
+  // Contact page slug is always "contact"
+  const page = await loadPageBySlug('contact', lang);
 
   return (
     <main>
-      <section className="bg-gradient-to-b from-zinc-50 to-white border-b">
-        <div className="mx-auto max-w-6xl px-4 py-16">
+      {/* Heading – aligned to blog layout */}
+      <section className="border-b">
+        <div className="mx-auto max-w-4xl px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-serif leading-tight">
-            {page?.hero.heading ?? fallbackHeading}
+            {page.hero.heading}
           </h1>
-          <p className="mt-2 text-zinc-600 max-w-prose">
-            {page?.hero.sub ?? fallbackSub}
-          </p>
+
+          {page.hero.sub ? (
+            <p className="mt-2 text-sm text-zinc-500">{page.hero.sub}</p>
+          ) : null}
         </div>
       </section>
 
-      {page?.body && (
-        <section>
-          <div className="mx-auto max-w-6xl px-4 py-8 prose max-w-none">
-            <MDXRemote source={page.body} />
-          </div>
-        </section>
-      )}
-
+      {/* Body + Contact Form */}
       <section>
-        <div className="mx-auto max-w-2xl px-4 py-10">
-          <ContactForm lang={lang} />
+        <div className="mx-auto max-w-4xl px-4 py-10">
+          {/* Body text from MDX */}
+          <article className="prose max-w-none mb-10">
+            {page.body}
+          </article>
+
+          {/* Contact Form */}
+          <form
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            className="space-y-6 max-w-lg"
+          >
+            <input type="hidden" name="form-name" value="contact" />
+
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Name</label>
+              <input
+                name="name"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                name="email"
+                type="email"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+            </div>
+
+            {/* Message */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Message</label>
+              <textarea
+                name="message"
+                rows={6}
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="rounded-full px-6 py-2 border border-zinc-900 hover:bg-zinc-900 hover:text-white"
+            >
+              Send
+            </button>
+          </form>
         </div>
       </section>
     </main>
