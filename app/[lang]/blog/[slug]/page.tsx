@@ -1,53 +1,37 @@
-import { listPosts, loadPost } from '@/lib/posts';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { loadPost } from '@/lib/posts';
+import type { Lang } from '@/lib/posts';
 
-type Lang = 'en' | 'ukr' | 'ru';
-
-export async function generateStaticParams() {
-  const langs: Lang[] = ['en', 'ukr', 'ru'];
-  const params: { lang: Lang; slug: string }[] = [];
-
-  for (const lang of langs) {
-    const posts = await listPosts(lang);
-    posts.forEach((p) => {
-      params.push({ lang, slug: p.slug });
-    });
-  }
-
-  return params;
-}
-
-export const dynamic = 'force-static';
-
-export default async function BlogPost({
-  params,
-}: {
+type Params = {
   params: { lang: Lang; slug: string };
-}) {
+};
+
+export default async function BlogPostPage({ params }: Params) {
   const { lang, slug } = params;
   const post = await loadPost(slug, lang);
 
   return (
     <main>
-      <section className="bg-gradient-to-b from-zinc-50 to-white border-b">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <h1 className="text-3xl md:text-4xl font-serif leading-tight">
-            {post.title}
-          </h1>
-          {post.date ? (
-            <div className="text-xs text-zinc-500 mt-2">{post.date}</div>
-          ) : null}
-          {post.description ? (
-            <p className="mt-2 text-zinc-600 max-w-prose">
-              {post.description}
+      {/* Heading + meta */}
+      <section className="border-b">
+        <div className="mx-auto max-w-4xl px-4 py-12">
+          <h1 className="text-3xl md:text-4xl font-serif">{post.title}</h1>
+          {post.date && (
+            <p className="mt-2 text-sm text-zinc-500">
+              {post.date}
             </p>
-          ) : null}
+          )}
         </div>
       </section>
 
-      <section className="scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-4 py-10 prose max-w-none">
-          <MDXRemote source={post.body} />
+      {/* Body aligned with heading + footer */}
+      <section>
+        <div className="mx-auto max-w-4xl px-4 py-10">
+          <article className="prose max-w-none">
+            {/* simple markdown-ish rendering; if you later switch to MDX, replace this */}
+            {post.body.split('\n').map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+          </article>
         </div>
       </section>
     </main>
