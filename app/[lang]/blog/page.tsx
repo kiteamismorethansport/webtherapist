@@ -1,12 +1,7 @@
-import Link from 'next/link';
-import { listPosts } from '@/lib/posts';
-import { loadPageBySlug, type Lang } from '@/lib/pages';
+import { loadPageBySlug } from '@/lib/pages';
+import { listPosts, type Lang } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-
-export function generateStaticParams() {
-  const langs: Lang[] = ['en', 'ukr', 'ru'];
-  return langs.map((lang) => ({ lang }));
-}
+import Link from 'next/link';
 
 export const dynamic = 'force-static';
 
@@ -17,77 +12,49 @@ export default async function BlogIndex({
 }) {
   const { lang } = params;
 
-  // Load localized hero + intro from blog.<lang>.mdx
-  const page = await loadPageBySlug('blog', lang).catch(() => null);
+  // CMS page for the blog index (title, subtitle, intro text)
+  const page = await loadPageBySlug('blog', lang);
 
-  // Load posts for this language
+  // Already sorted newest-first in lib/posts
   const posts = await listPosts(lang);
 
   return (
     <main>
-      <section className="bg-gradient-to-b from-zinc-50 to-white border-b">
-        <div className="mx-auto max-w-6xl px-4 py-16">
+      {/* Heading – same layout as other inner pages */}
+      <section className="border-b">
+        <div className="mx-auto max-w-4xl px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-serif leading-tight">
-            {page?.hero.heading ?? (lang === 'ru'
-              ? 'Блог'
-              : lang === 'ukr'
-              ? 'Блог'
-              : 'Blog')}
+            {page.hero.heading}
           </h1>
-          {page?.hero.sub ? (
-            <p className="mt-2 text-zinc-600 max-w-prose">{page.hero.sub}</p>
-          ) : (
-            <p className="mt-2 text-zinc-600 max-w-prose">
-              {lang === 'ru'
-                ? 'Последние статьи и обновления.'
-                : lang === 'ukr'
-                ? 'Останні статті та оновлення.'
-                : 'Latest posts and updates.'}
-            </p>
-          )}
+          {page.hero.sub ? (
+            <p className="mt-2 text-sm text-zinc-500">{page.hero.sub}</p>
+          ) : null}
         </div>
       </section>
 
-      {page?.body && (
-        <section>
-          <div className="mx-auto max-w-6xl px-4 py-10 prose max-w-none">
-            <MDXRemote source={page.body} />
-          </div>
-        </section>
-      )}
-
+      {/* Intro body + list of posts – aligned with heading */}
       <section>
-        <div className="mx-auto max-w-6xl px-4 py-10">
-          {posts.length === 0 ? (
-            <p className="text-zinc-500">
-              {lang === 'ru'
-                ? 'Пока нет опубликованных записей.'
-                : lang === 'ukr'
-                ? 'Поки немає опублікованих дописів.'
-                : 'No posts yet.'}
-            </p>
-          ) : (
-            <ul className="space-y-6">
-              {posts.map((p) => (
-                <li key={p.slug} className="border-b pb-6">
-                  <h2 className="text-xl font-semibold">
-                    <Link
-                      href={`/${lang}/blog/${p.slug}`}
-                      className="hover:underline"
-                    >
-                      {p.title}
-                    </Link>
-                  </h2>
-                  {p.date ? (
-                    <div className="text-xs text-zinc-500 mt-1">{p.date}</div>
-                  ) : null}
-                  {p.description ? (
-                    <p className="mt-2 text-zinc-600">{p.description}</p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="mx-auto max-w-4xl px-4 py-10">
+          {/* Intro text from MDX */}
+          <article className="prose max-w-none mb-10">
+            <MDXRemote source={page.body} />
+          </article>
+
+          {/* Posts list */}
+          <div className="divide-y">
+            {posts.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/${lang}/blog/${post.slug}`}
+                className="block py-4 hover:bg-zinc-50 -mx-3 px-3 rounded-lg transition"
+              >
+                <div className="font-semibold">{post.title}</div>
+                {post.date && (
+                  <div className="mt-1 text-xs text-zinc-500">{post.date}</div>
+                )}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
     </main>
