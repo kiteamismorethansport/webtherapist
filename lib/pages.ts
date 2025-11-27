@@ -14,7 +14,7 @@ export type PageData = {
     sub?: string;
   };
   body: string;
-  seo?: {
+  seo: {
     title?: string;
     description?: string;
     canonical?: string;
@@ -22,38 +22,106 @@ export type PageData = {
   };
 };
 
-// Generic loader by slug: used for /[lang]/work-with-me, /[lang]/services, etc.
-export async function loadPageBySlug(slug: string, lang: Lang): Promise<PageData> {
-  const file = path.join(process.cwd(), 'content', 'pages', `${slug}.${lang}.mdx`);
+function pagesDir() {
+  return path.join(process.cwd(), 'content', 'pages');
+}
 
-  const raw = await fs.readFile(file, 'utf8');
-  const { data, content } = matter(raw);
+/**
+ * Load a single page by its public slug (the one you type in Decap).
+ * Works even if the actual filename is "-", "--1", etc.
+ */
+export async function loadPageBySlug(
+  slug: string,
+  lang: Lang,
+): Promise<PageData> {
+  const dir = pagesDir();
+  let files: string[] = [];
 
-  const title = (data as any)?.title || slug;
-  const heroData = (data as any)?.hero || {};
-  const hero = {
-    heading: heroData.heading || title,
-    sub: heroData.sub || '',
-  };
+  try {
+    files = await fs.readdir(dir);
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      return {
+        slug,
+        lang,
+        title: 'Page not found',
+        hero: { heading: 'Page not found', sub: '' },
+        body: 'This page could not be found.',
+        seo: {},
+      };
+    }
+    throw err;
+  }
 
-  const seo = (data as any)?.seo || {};
+  const langSuffix = `.${lang}.mdx`;
 
+  // handle the old "-" / "--1" style filenames:
+  // we try both "slug" and "slug-" variants
+  const candidates = Array.from(
+    new Set([
+      slug,
+      slug.endsWith('-') ? slug.replace(/-+$/, '') : `${slug}-`,
+    ]),
+  );
+
+  for (const file of files) {
+    if (!file.endsWith(langSuffix)) continue;
+
+    const fullPath = path.join(dir, file);
+
+    try {
+      const raw = await fs.readFile(fullPath, 'utf8');
+      const { data, content } = matter(raw);
+
+      const fileSlug = file.replace(langSuffix, '');
+      const frontmatterSlug = (data as any)?.slug as string | undefined;
+      const fmSlug =
+        frontmatterSlug && frontmatterSlug.trim().length > 0
+          ? frontmatterSlug.trim()
+          : fileSlug;
+
+      if (!candidates.includes(fmSlug)) continue;
+
+      const title = ((data as any)?.title as string) || fmSlug;
+      const heroData = (data as any)?.hero || {};
+      const hero = {
+        heading: heroData.heading || title,
+        sub: heroData.sub || '',
+      };
+      const seo = (data as any)?.seo || {};
+
+      return {
+        slug: fmSlug,
+        lang,
+        title,
+        hero,
+        body: content,
+        seo,
+      };
+    } catch {
+      // if one file is broken, skip it and try the next
+      continue;
+    }
+  }
+
+  // nothing matched
   return {
     slug,
     lang,
-    title,
-    hero,
-    body: content,
-    seo,
+    title: 'Page not found',
+    hero: { heading: 'Page not found', sub: '' },
+    body: 'This page could not be found.',
+    seo: {},
   };
 }
 
-// Backwards-compatible helper used by app/[lang]/page.tsx for the HOME page
-// It returns the same shape that Home expects: { hero, address, ... }.
+/**
+ * Backwards-compatible helper for the HOME page
+ * (used in app/[lang]/page.tsx).
+ */
 export async function loadPage(slug: string, lang: Lang): Promise<any> {
-  // For now we only really use this for "home"
+  // for now we only really use this for "home"
   const page = await loadPageBySlug(slug, lang).catch(() => {
-    // Fallback in case home.<lang>.mdx is missing
     return {
       slug,
       lang,
