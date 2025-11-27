@@ -65,16 +65,16 @@ collections:
     extension: mdx
     format: frontmatter
 
-    # Use the frontmatter slug field for filenames
+    # use our own slug field for filenames
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
 
     fields:
-      - label: Slug (Latin-only)
+      - label: Slug
         name: slug
         widget: string
-        i18n: duplicate
-        hint: "Used in URL, e.g. work-with-me"
+        i18n: duplicate        # same slug for all languages
+        hint: "Latin-only slug, e.g. work-with-me"
 
       - label: Title
         name: title
@@ -84,11 +84,9 @@ collections:
       - label: Hero
         name: hero
         widget: object
-        i18n: true
         fields:
           - { label: Heading, name: heading, widget: string, i18n: true }
-          - { label: Subheading, name: sub, widget: text, required: false, i18n: true }
-          - { label: Hero Image, name: image, widget: image, required: false, i18n: duplicate }
+          - { label: Sub, name: sub, widget: text, required: false, i18n: true }
 
       - label: Body
         name: body
@@ -103,8 +101,8 @@ collections:
         fields:
           - { label: Title, name: title, widget: string, required: false, i18n: true }
           - { label: Description, name: description, widget: text, required: false, i18n: true }
-          - { label: Canonical, name: canonical, widget: string, required: false, i18n: duplicate }
-          - { label: Noindex, name: noindex, widget: boolean, required: false, i18n: duplicate }
+          - { label: Canonical, name: canonical, widget: string, required: false }
+          - { label: Noindex, name: noindex, widget: boolean, required: false }
 
   # =========================
   #  Blog Posts (with custom slug field)
