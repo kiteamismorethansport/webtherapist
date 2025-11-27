@@ -6,11 +6,9 @@ type Lang = 'en' | 'ukr' | 'ru';
 
 export const dynamic = 'force-static';
 
-// We still prebuild the two main pages for speed,
-// but *any* other slug will also work at runtime if an MDX file exists.
 export function generateStaticParams() {
   const langs: Lang[] = ['en', 'ukr', 'ru'];
-  const slugs = ['work-with-me', 'services'];
+  const slugs = ['work-with-me', 'services']; // prebuild these
 
   return langs.flatMap((lang) => slugs.map((slug) => ({ lang, slug })));
 }
@@ -25,14 +23,13 @@ export default async function Page({
   let page;
   try {
     page = await loadPageBySlug(slug, lang);
-  } catch (e) {
-    // If there is no MDX file for this slug, show 404
+  } catch {
     notFound();
   }
 
   return (
     <main>
-      {/* Heading – same layout as other inner pages */}
+      {/* Heading – aligned with other inner pages */}
       <section className="border-b">
         <div className="mx-auto max-w-4xl px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-serif leading-tight">
@@ -44,7 +41,7 @@ export default async function Page({
         </div>
       </section>
 
-      {/* Body – aligned with heading */}
+      {/* Body */}
       <section>
         <div className="mx-auto max-w-4xl px-4 py-10">
           <article className="prose max-w-none">
