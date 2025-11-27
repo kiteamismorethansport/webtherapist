@@ -1,13 +1,16 @@
 import { loadPageBySlug } from '@/lib/pages';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { notFound } from 'next/navigation';
 
 type Lang = 'en' | 'ukr' | 'ru';
 
 export const dynamic = 'force-static';
 
+// We still prebuild the two main pages for speed,
+// but *any* other slug will also work at runtime if an MDX file exists.
 export function generateStaticParams() {
   const langs: Lang[] = ['en', 'ukr', 'ru'];
-  const slugs = ['work-with-me', 'services']; // we ONLY handle these here
+  const slugs = ['work-with-me', 'services'];
 
   return langs.flatMap((lang) => slugs.map((slug) => ({ lang, slug })));
 }
@@ -19,15 +22,17 @@ export default async function Page({
 }) {
   const { lang, slug } = params;
 
-  if (!['work-with-me', 'services'].includes(slug)) {
-    return null as any; // 404 handled by Next
+  let page;
+  try {
+    page = await loadPageBySlug(slug, lang);
+  } catch (e) {
+    // If there is no MDX file for this slug, show 404
+    notFound();
   }
-
-  const page = await loadPageBySlug(slug, lang);
 
   return (
     <main>
-      {/* Heading – same width as blog post */}
+      {/* Heading – same layout as other inner pages */}
       <section className="border-b">
         <div className="mx-auto max-w-4xl px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-serif leading-tight">
@@ -50,4 +55,3 @@ export default async function Page({
     </main>
   );
 }
-
