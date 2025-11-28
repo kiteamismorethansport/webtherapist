@@ -57,7 +57,7 @@ collections:
   # =========================
   #  Pages (work-with-me, services, blog, contact...)
   # =========================
-  - name: pages
+    - name: pages
     label: Pages
     i18n: true
     folder: content/pages
@@ -73,25 +73,26 @@ collections:
       - label: Slug
         name: slug
         widget: string
-        i18n: duplicate        # same slug for all languages
+        i18n: duplicate        # same slug in all languages
         hint: "Latin-only slug, e.g. work-with-me"
 
       - label: Title
         name: title
         widget: string
-        i18n: true
+        i18n: true             # translated title
 
       - label: Hero
         name: hero
         widget: object
+        i18n: true             # 🔴 make the whole object translatable
         fields:
-          - { label: Heading, name: heading, widget: string, i18n: true }
-          - { label: Sub, name: sub, widget: text, required: false, i18n: true }
+          - { label: Heading, name: heading, widget: string }
+          - { label: Sub (optional), name: sub, widget: text, required: false }
 
       - label: Body
         name: body
         widget: markdown
-        i18n: true
+        i18n: true             # translated body
 
       - label: SEO
         name: seo
@@ -103,6 +104,7 @@ collections:
           - { label: Description, name: description, widget: text, required: false, i18n: true }
           - { label: Canonical, name: canonical, widget: string, required: false }
           - { label: Noindex, name: noindex, widget: boolean, required: false }
+
 
 
   # =========================
