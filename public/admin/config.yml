@@ -57,7 +57,7 @@ collections:
   # =========================
   #  Pages (work-with-me, services, blog, contact...)
   # =========================
-    - name: pages
+  - name: pages
     label: Pages
     i18n: true
     folder: content/pages
