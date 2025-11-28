@@ -12,6 +12,7 @@ export type PageData = {
   hero: {
     heading: string;
     sub?: string;
+    image?: string;
   };
   body: string;
   seo: {
@@ -85,9 +86,10 @@ export async function loadPageBySlug(
       const title = ((data as any)?.title as string) || fmSlug;
       const heroData = (data as any)?.hero || {};
       const hero = {
-        heading: heroData.heading || title,
-        sub: heroData.sub || '',
-      };
+  heading: heroData.heading || title,
+  sub: heroData.sub || '',
+  image: heroData.image || undefined,
+};
       const seo = (data as any)?.seo || {};
 
       return {

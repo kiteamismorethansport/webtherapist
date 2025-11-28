@@ -12,6 +12,12 @@ export default async function Home({ params }: { params: { lang: Lang } }) {
   const settings = await loadSettings(lang);
   const page = await loadPage('home', lang);
 
+  const heroImage =
+    page.hero.image && page.hero.image.length > 0
+      ? page.hero.image
+      : '/images/placeholder-hero.jpg';
+
+
   return (
     <main>
       {/* HERO */}
@@ -45,10 +51,14 @@ export default async function Home({ params }: { params: { lang: Lang } }) {
             ) : null}
           </div>
 
-          <div
-            className="aspect-video rounded-2xl bg-[url('/images/placeholder-hero.jpg')] bg-cover bg-center shadow-md"
-            aria-label="Therapy office"
-          />
+          <div className="aspect-video rounded-2xl overflow-hidden shadow-md bg-zinc-100">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={heroImage}
+              alt={page.hero.heading}
+              className="h-full w-full object-cover"
+            />
+            </div>
         </div>
       </section>
 

@@ -88,7 +88,14 @@ collections:
         fields:
           - { label: Heading, name: heading, widget: string, i18n: true }
           - { label: Sub (optional), name: sub, widget: text, required: false, i18n: true }
-
+          - {
+              label: Hero image (optional),
+              name: image,
+              widget: image,
+              required: false,
+              i18n: duplicate
+            }
+            
       - label: Body
         name: body
         widget: markdown
