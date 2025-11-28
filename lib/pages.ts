@@ -1,11 +1,10 @@
-// lib/pages.ts
 import { promises as fs } from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
-export type Lang = 'en' | 'ukr' | 'ru';
+type Lang = 'en' | 'ru' | 'ukr';
 
-export type PageData = {
+export type Page = {
   slug: string;
   lang: Lang;
   title: string;
@@ -15,138 +14,59 @@ export type PageData = {
     image?: string;
   };
   body: string;
-  seo: {
-    title?: string;
-    description?: string;
-    canonical?: string;
-    noindex?: boolean;
-  };
+  address?: string;
 };
 
-function pagesDir() {
-  return path.join(process.cwd(), 'content', 'pages');
-}
+type PageFrontmatter = {
+  slug?: string;
+  title?: string;
+  hero?: {
+    heading?: string;
+    sub?: string;
+    image?: string;
+  };
+  address?: string;
+};
 
 /**
- * Load a single page by its public slug (the one you type in Decap).
- * Works even if the actual filename is "-", "--1", etc.
+ * Helper to read a page MDX file like `content/pages/<fileSlug>.<lang>.mdx`
  */
-export async function loadPageBySlug(
-  slug: string,
-  lang: Lang,
-): Promise<PageData> {
-  const dir = pagesDir();
-  let files: string[] = [];
-
-  try {
-    files = await fs.readdir(dir);
-  } catch (err: any) {
-    if (err.code === 'ENOENT') {
-      return {
-        slug,
-        lang,
-        title: 'Page not found',
-        hero: { heading: 'Page not found', sub: '' },
-        body: 'This page could not be found.',
-        seo: {},
-      };
-    }
-    throw err;
-  }
-
-  const langSuffix = `.${lang}.mdx`;
-
-  // handle the old "-" / "--1" style filenames:
-  // we try both "slug" and "slug-" variants
-  const candidates = Array.from(
-    new Set([
-      slug,
-      slug.endsWith('-') ? slug.replace(/-+$/, '') : `${slug}-`,
-    ]),
+async function readPageFile(fileSlug: string, lang: Lang): Promise<Page> {
+  const filePath = path.join(
+    process.cwd(),
+    'content',
+    'pages',
+    `${fileSlug}.${lang}.mdx`
   );
 
-  for (const file of files) {
-    if (!file.endsWith(langSuffix)) continue;
+  const raw = await fs.readFile(filePath, 'utf8');
+  const { data, content } = matter(raw);
+  const fm = data as PageFrontmatter;
+  const hero = fm.hero || {};
 
-    const fullPath = path.join(dir, file);
-
-    try {
-      const raw = await fs.readFile(fullPath, 'utf8');
-      const { data, content } = matter(raw);
-
-      const fileSlug = file.replace(langSuffix, '');
-      const frontmatterSlug = (data as any)?.slug as string | undefined;
-      const fmSlug =
-        frontmatterSlug && frontmatterSlug.trim().length > 0
-          ? frontmatterSlug.trim()
-          : fileSlug;
-
-      if (!candidates.includes(fmSlug)) continue;
-
-      const title = ((data as any)?.title as string) || fmSlug;
-      const heroData = (data as any)?.hero || {};
-      const hero = {
-  heading: heroData.heading || title,
-  sub: heroData.sub || '',
-  image: heroData.image || undefined,
-};
-      const seo = (data as any)?.seo || {};
-
-      return {
-        slug: fmSlug,
-        lang,
-        title,
-        hero,
-        body: content,
-        seo,
-      };
-    } catch {
-      // if one file is broken, skip it and try the next
-      continue;
-    }
-  }
-
-  // nothing matched
   return {
-    slug,
+    slug: fm.slug || fileSlug,
     lang,
-    title: 'Page not found',
-    hero: { heading: 'Page not found', sub: '' },
-    body: 'This page could not be found.',
-    seo: {},
+    title: fm.title || '',
+    hero: {
+      heading: hero.heading || '',
+      sub: hero.sub,
+      image: hero.image,
+    },
+    body: content,
+    address: fm.address,
   };
 }
 
-/**
- * Backwards-compatible helper for the HOME page
- * (used in app/[lang]/page.tsx).
- */
-export async function loadPage(slug: string, lang: Lang): Promise<any> {
-  // for now we only really use this for "home"
-  const page = await loadPageBySlug(slug, lang).catch(() => {
-    return {
-      slug,
-      lang,
-      title: 'Home',
-      hero: {
-        heading: 'Evidence-based therapy with warmth and clarity.',
-        sub: 'Individual counseling online and in person.',
-      },
-      body: '',
-      seo: {},
-    } as PageData;
-  });
+/** Home page loader: `loadPage('home', lang)` */
+export async function loadPage(slug: string, lang: Lang): Promise<Page> {
+  return readPageFile(slug, lang);
+}
 
-  // Address text like we had originally
-  const address =
-    lang === 'ru'
-      ? 'Киев • Онлайн по всему миру'
-      : lang === 'ukr'
-      ? 'Київ • Онлайн по всьому світу'
-      : 'Kyiv • Online Worldwide';
-
-  return {
-    ...page,
-    address,
-  };
+/** Generic page loader for /[lang]/[slug] routes */
+export async function loadPageBySlug(
+  slug: string,
+  lang: Lang
+): Promise<Page> {
+  return readPageFile(slug, lang);
 }
