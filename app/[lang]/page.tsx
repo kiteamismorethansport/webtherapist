@@ -12,9 +12,15 @@ export default async function Home({ params }: { params: { lang: Lang } }) {
   const settings = await loadSettings(lang);
   const page = await loadPage('home', lang);
 
+  const rawHeroImage = page.hero?.image as string | undefined;
+
   const heroImage =
-    page.hero.image && page.hero.image.length > 0
-      ? page.hero.image
+    rawHeroImage && rawHeroImage.length > 0
+      ? rawHeroImage.startsWith('http')
+        ? rawHeroImage
+        : rawHeroImage.startsWith('/')
+          ? rawHeroImage
+          : '/' + rawHeroImage.replace(/^public\//, '')
       : '/images/placeholder-hero.jpg';
 
 
