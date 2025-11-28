@@ -84,10 +84,10 @@ collections:
       - label: Hero
         name: hero
         widget: object
-        i18n: true             # 🔴 make the whole object translatable
+        i18n: true
         fields:
-          - { label: Heading, name: heading, widget: string }
-          - { label: Sub (optional), name: sub, widget: text, required: false }
+          - { label: Heading, name: heading, widget: string, i18n: true }
+          - { label: Sub (optional), name: sub, widget: text, required: false, i18n: true }
 
       - label: Body
         name: body
