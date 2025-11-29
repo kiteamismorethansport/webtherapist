@@ -1,8 +1,20 @@
-import { loadPost } from '@/lib/posts';
-import type { Lang } from '@/lib/posts';
+// app/[lang]/blog/[slug]/page.tsx
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import type { ImgHTMLAttributes } from 'react';
+
+import { loadPost, type Lang } from '@/lib/posts';
 
 type Params = {
   params: { lang: Lang; slug: string };
+};
+
+// Custom <img> so that "111.jpg" -> "/images/111.jpg"
+const mdxComponents = {
+  img: (props: ImgHTMLAttributes<HTMLImageElement>) => {
+    const src = props.src ?? '';
+    const fixedSrc = src.startsWith('/') ? src : `/images/${src}`;
+    return <img {...props} src={fixedSrc} />;
+  },
 };
 
 export default async function BlogPostPage({ params }: Params) {
@@ -16,9 +28,7 @@ export default async function BlogPostPage({ params }: Params) {
         <div className="mx-auto max-w-4xl px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-serif">{post.title}</h1>
           {post.date && (
-            <p className="mt-2 text-sm text-zinc-500">
-              {post.date}
-            </p>
+            <p className="mt-2 text-sm text-zinc-500">{post.date}</p>
           )}
         </div>
       </section>
@@ -27,10 +37,7 @@ export default async function BlogPostPage({ params }: Params) {
       <section>
         <div className="mx-auto max-w-4xl px-4 py-10">
           <article className="prose max-w-none">
-            {/* simple markdown-ish rendering; if you later switch to MDX, replace this */}
-            {post.body.split('\n').map((line, i) => (
-              <p key={i}>{line}</p>
-            ))}
+            <MDXRemote source={post.body} components={mdxComponents} />
           </article>
         </div>
       </section>
