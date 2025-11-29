@@ -65,6 +65,7 @@ collections:
     create: true
     extension: mdx
     format: frontmatter
+    identifier_field: slug
     
     # use our own slug field for filenames
     slug: "{{fields.slug}}"
