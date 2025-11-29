@@ -131,8 +131,6 @@ collections:
     # Use frontmatter slug for file naming
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
-    media_folder: "public/images"
-    public_folder: "/images"
 
     fields:
       - label: Slug (Latin-only, required)
