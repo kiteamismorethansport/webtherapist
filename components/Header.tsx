@@ -15,12 +15,24 @@ export default function Header({
   const [open, setOpen] = useState(false)
   const nav = settings.nav || {}
 
+  // Label for the main page button depending on language
+  const mainLabel =
+    lang === 'ru'
+      ? 'Главная'
+      : lang === 'ukr'
+      ? 'Головна'
+      : 'Main'
+
   const desktopLinks = [
+    // NEW: main page button
+    { label: mainLabel, href: `/${lang}` },
+
     { label: nav.workWithMe || 'Work With Me', href: `/${lang}/work-with-me` },
     { label: nav.services || 'Services', href: `/${lang}/services` },
     { label: nav.blog || 'Blog', href: `/${lang}/blog` },
     { label: nav.contact || 'Contact', href: `/${lang}/contact` },
   ]
+
 
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
