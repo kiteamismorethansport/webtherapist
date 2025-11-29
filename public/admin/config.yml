@@ -69,7 +69,8 @@ collections:
     # use our own slug field for filenames
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
-    
+    media_folder: "public/images/pages"
+    public_folder: "/images/pages"
 
     fields:
       - label: Slug
