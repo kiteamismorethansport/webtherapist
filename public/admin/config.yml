@@ -130,8 +130,7 @@ collections:
     # Use frontmatter slug for file naming
     slug: "{{fields.slug}}"
     path: "{{fields.slug}}.{{locale}}"
-    media_folder: "public/images/pages"
-    public_folder: "/images/pages"
+    
 
     fields:
       - label: Slug (Latin-only, required)
