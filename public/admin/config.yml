@@ -5,6 +5,7 @@ backend:
 media_folder: "public/images"
 public_folder: "/images"
 local_backend: true
+media_folder_relative: false
 
 i18n:
   structure: multiple_files
