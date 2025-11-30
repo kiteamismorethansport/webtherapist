@@ -56,8 +56,11 @@ export default function ContactForm({ lang }: { lang: Lang }) {
 
   const t = TEXTS[lang];
 
+  console.log('ContactForm rendered with lang:', lang);
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    console.log('handleSubmit called');
     setStatus('submitting');
 
     const form = e.currentTarget;
