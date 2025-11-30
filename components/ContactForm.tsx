@@ -63,21 +63,42 @@ export default function ContactForm({ lang }: { lang: Lang }) {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    if (!formData.has('form-name')) {
-      formData.append('form-name', 'contact');
+    // Honeypot: if bot-field is filled, silently treat as success
+    const botField = formData.get('bot-field');
+    if (botField) {
+      console.warn('Bot detected, ignoring submission');
+      setStatus('success');
+      form.reset();
+      return;
+    }
+
+    const name = formData.get('name')?.toString().trim();
+    const email = formData.get('email')?.toString().trim();
+    const message = formData.get('message')?.toString().trim();
+
+    if (!name || !email || !message) {
+      setStatus('error');
+      return;
     }
 
     try {
-      await fetch('/__forms.html', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: new URLSearchParams(formData as any).toString(),
+        body: JSON.stringify({ name, email, message, lang }),
       });
 
-      setStatus('success');
-      form.reset();
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && (data as any).success) {
+        setStatus('success');
+        form.reset();
+      } else {
+        console.error('Contact API error:', data);
+        setStatus('error');
+      }
     } catch (err) {
       console.error(err);
       setStatus('error');
@@ -98,8 +119,8 @@ export default function ContactForm({ lang }: { lang: Lang }) {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Netlify form-name */}
-        <input type="hidden" name="form-name" value="contact" />
+        {/* Was for Netlify; no longer needed */}
+        {/* <input type="hidden" name="form-name" value="contact" /> */}
 
         {/* Honeypot */}
         <p className="hidden">
