@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: 'Website Contact <onboarding@resend.dev>', // later you can change this to your domain
       to: process.env.CONTACT_EMAIL as string,
-      reply_to: email, // so you can reply directly to the client
+      replyTo: email, // so you can reply directly to the client
       subject: `New contact form message from ${name}`,
       html: `
         <h2>New contact message</h2>
