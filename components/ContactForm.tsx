@@ -57,62 +57,62 @@ export default function ContactForm({ lang }: { lang: Lang }) {
   const t = TEXTS[lang];
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  setStatus('submitting');
+    e.preventDefault();
+    setStatus('submitting');
 
-  const form = e.currentTarget;
-  const formData = new FormData(form);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
-  // Honeypot: if bot-field is filled, silently treat as success
-  const botField = formData.get('bot-field');
-  if (botField) {
-    console.warn('Bot detected, ignoring submission');
-    setStatus('success');
-    form.reset();
-    return;
-  }
-
-  const name = formData.get('name')?.toString().trim();
-  const email = formData.get('email')?.toString().trim();
-  const message = formData.get('message')?.toString().trim();
-
-  if (!name || !email || !message) {
-    console.warn('Missing form fields:', { name, email, message });
-    setStatus('error');
-    return;
-  }
-
-  console.log('Submitting contact form', { name, email, message, lang });
-
-  try {
-    const res = await fetch('/api/contact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, message, lang }),
-    });
-
-    let data: any = {};
-    try {
-      data = await res.json();
-    } catch {
-      console.warn('Contact API returned non-JSON response');
-    }
-
-    console.log('Contact API response:', res.status, data);
-
-    if (res.ok && data?.success) {
+    // Honeypot: if bot-field is filled, silently treat as success
+    const botField = formData.get('bot-field');
+    if (botField) {
+      console.warn('Bot detected, ignoring submission');
       setStatus('success');
       form.reset();
-    } else {
+      return;
+    }
+
+    const name = formData.get('name')?.toString().trim();
+    const email = formData.get('email')?.toString().trim();
+    const message = formData.get('message')?.toString().trim();
+
+    if (!name || !email || !message) {
+      console.warn('Missing form fields:', { name, email, message });
+      setStatus('error');
+      return;
+    }
+
+    console.log('Submitting contact form', { name, email, message, lang });
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message, lang }),
+      });
+
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        console.warn('Contact API returned non-JSON response');
+      }
+
+      console.log('Contact API response:', res.status, data);
+
+      if (res.ok && data?.success) {
+        setStatus('success');
+        form.reset();
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error('Contact fetch error:', err);
       setStatus('error');
     }
-  } catch (err) {
-    console.error('Contact fetch error:', err);
-    setStatus('error');
   }
-}
 
   return (
     <div>
@@ -127,10 +127,12 @@ export default function ContactForm({ lang }: { lang: Lang }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Was for Netlify; no longer needed */}
-        {/* <input type="hidden" name="form-name" value="contact" /> */}
-
+      <form
+        onSubmit={handleSubmit}
+        method="POST"
+        noValidate
+        className="space-y-4"
+      >
         {/* Honeypot */}
         <p className="hidden">
           <label>
